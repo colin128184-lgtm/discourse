@@ -88,7 +88,7 @@ export default class TagInfo extends Component {
     }
     this.set("loading", true);
     return this.store
-      .find("tag-info", this.tag.id)
+      .find("tag-info", this.tag.name)
       .then((result) => {
         this.set("tagInfo", result);
         this.set(
@@ -109,7 +109,7 @@ export default class TagInfo extends Component {
     );
     this.setProperties({
       editing: true,
-      newTagName: this.tag.id,
+      newTagName: this.tag.name,
       newTagDescription: this.tagInfo.description,
     });
   }
@@ -117,7 +117,7 @@ export default class TagInfo extends Component {
   @action
   unlinkSynonym(tag, event) {
     event?.preventDefault();
-    ajax(`/tag/${this.tagInfo.name}/synonyms/${tag.id}`, {
+    ajax(`/tag/${this.tagInfo.name}/synonyms/${tag.name}`, {
       type: "DELETE",
     })
       .then(() => this.tagInfo.synonyms.removeObject(tag))
@@ -153,7 +153,7 @@ export default class TagInfo extends Component {
 
   @action
   finishedEditing() {
-    const oldTagName = this.tag.id;
+    const oldTagName = this.tag.name;
     this.newTagDescription = this.newTagDescription?.replaceAll("\n", "<br>");
     this.tag
       .update({ id: this.newTagName, description: this.newTagDescription })
@@ -162,9 +162,9 @@ export default class TagInfo extends Component {
         this.tagInfo.set("description", this.newTagDescription);
         if (
           result.responseJson.tag &&
-          oldTagName !== result.responseJson.tag.id
+          oldTagName !== result.responseJson.tag.name
         ) {
-          this.router.transitionTo("tag.show", result.responseJson.tag.id);
+          this.router.transitionTo("tag.show", result.responseJson.tag.name);
         }
       })
       .catch(popupAjaxError);
@@ -331,7 +331,7 @@ export default class TagInfo extends Component {
             <div class="tag-list">
               {{#each this.tagInfo.synonyms as |tag|}}
                 <div class="tag-box">
-                  {{discourseTag tag.id pmOnly=tag.pmOnly tagName="div"}}
+                  {{discourseTag tag.name pmOnly=tag.pmOnly tagName="div"}}
                   {{#if this.editSynonymsMode}}
                     <a
                       href
